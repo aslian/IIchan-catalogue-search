@@ -1,45 +1,68 @@
 // ==UserScript==
 // @name         IIchan catalogue search
 // @namespace    localhost
-// @version      1.5
-// @description  trying to take over the world!
+// @version      2.0
+// @description  Trying to take over the world!
 // @author       Cirno
 // @match        http://iichan.hk/*/catalogue.html
-// @grant        none
+// @grant        unsafeWindow
 // ==/UserScript==
 
 /* jshint esnext:true */
-var $ = document.querySelector.bind(document);
-var $$ = document.querySelectorAll.bind(document);
+var $ = function(selector, startNode = false){
+    var elements = (startNode || document).querySelectorAll(selector);
+
+    if (elements.length === 0) {
+        return [];
+    } else if (elements.length === 1) {
+        return elements[0];
+    } else {
+        return Array.from(elements);
+    }
+}.bind(document);
+
+var catalogParser  = {
+    container:'.catthreadlist',
+    threads: '.catthreadlist a',
+
+    heading: '.theader',
+    title: '.filetitle',
+    snippet: '.cattext',
+
+    date: /(\d{2})\s(\W{3})(?:\W+)?\s(\d{4})/,
+    time: /..:.{5}/,
+    threadNumber: /^#(\d+)\s/,
+
+    searchBox: '#searchbox',
+    clearBtn: '#clearbtn',
+    sortMode: 'input[name=sortmode]',
+    sortDirection: 'input[name=sortdirection]'
+};
 
 function filterCatalog(event){
 	var query = event.target.value;
 
-	var heading = '.theader';
-	var title = '.filetitle';
-	var snippet = '.cattext';
-
-	var threads = $$('.catthreadlist a');
+    var threads = $(catalogParser.threads);
 	var count = threads.length;
 
-	for(var thread of Array.from(threads)){
-		// reset
+	for (var thread of threads){
+		// Reset
 		if(thread.style.display !== ''){
 			thread.style.display = '';
 		}
 
-		// if nothing to nipah about
+		// If nothing to nipah about, give up
 		if(query === '' || query.match(/^\s+$/)){
 			continue;
 		}
 
-		// but if they doesnt't fit...
+		// But if they doesnt't fit...
 		var re = new RegExp(query, 'i');
 		if(
 			!(
-				thread.title.match(re) || // This actually matches thread creation date
-				( (thread.querySelector(title) !== null) && thread.querySelector(title).textContent.match(re) ) ||
-				( (thread.querySelector(snippet) !== null) && thread.querySelector(snippet).textContent.match(re) )
+				thread.title.match(re) || // This actually matches thread creation date, although accessing "title" property
+				( ($(catalogParser.title, thread).length !== 0) && $(catalogParser.title, thread).textContent.match(re) ) ||
+				( ($(catalogParser.snippet, thread).length !== 0) && $(catalogParser.snippet, thread).textContent.match(re) )
 			)
 		){
 			// ... hide 'em and reveal needed
@@ -48,14 +71,48 @@ function filterCatalog(event){
 		}
 	}
 
-	$(heading).innerHTML = $(heading).innerHTML.match(/\d/) ? $(heading).innerHTML.replace(/\d+/, count) : $(heading).innerHTML + ' <b>(' + count + ')</b>';
+	$(catalogParser.heading).innerHTML = $(catalogParser.heading).innerHTML.match(/\d/) ? $(catalogParser.heading).innerHTML.replace(/\d+/, count) : $(catalogParser.heading).innerHTML + ` <b>(${ count })</b>`;
 }
 
+/* jshint ignore:start */
+function sortCatalog() {
+    // false: bump order, true: by date
+    // false: asc,        true: desc
+    var mode = Boolean(parseInt($(catalogParser.sortMode + ':checked').value));
+    var desc = Boolean(parseInt($(catalogParser.sortDirection + ':checked').value));
 
-// ondomcontentloaded
+    var threads = $(catalogParser.threads);
 
-// display search bar
-$('.theader').insertAdjacentHTML(
+    // This affects perfomance.
+    // Hidden elements are being sorted faster.
+    $(catalogParser.container).style.display = 'none';
+
+    threads.sort((a, b) => {
+        [a, b] = [a, b].map(thread => mode ? parseInt(thread.title.match(catalogParser.threadNumber).pop()) : parseInt(thread.dataset.bumpOrder))
+
+        if(mode) {
+            if(desc) return - (a - b);
+            return a - b;
+        } else {
+            if(desc) return a - b;
+            return - (a - b);
+        }
+    }).forEach(thread => {
+        thread.parentNode.appendChild(thread)
+        if(thread.firstChild.nodeType == Node.TEXT_NODE) thread.firstChild.remove()	// Fix textNode artifacts
+    })
+
+    // Show them.
+    $(catalogParser.container).style.display = '';
+
+}
+/* jshint ignore:end */
+
+
+// onDOMContentLoaded
+
+// Display UI
+$(catalogParser.heading).insertAdjacentHTML(
 	'afterend',
 	`
 	<div class="postarea">
@@ -63,34 +120,67 @@ $('.theader').insertAdjacentHTML(
 				<tbody>
 					<tr>
 						<td class="postblock">&nbsp;Поиск&nbsp;</td>
-						<td><input size="28" type="text" autocomplete="off" title="Поиск" id="filterbox" placeholder="Начните ввод для поиска..."></td>
+						<td>
+							<input size="28" type="text" autocomplete="off" title="Поиск" id="searchbox" placeholder="Начните ввод для поиска...">
+							<span id="clearbtn">ｘ</span>
+						</td>
+					</tr>
+					<tr>
+						<td class="postblock">Сортировка&nbsp;&nbsp;</td>
+						<td>
+							<label style="cursor: pointer;">[<input name="sortmode" type="radio" value="0" checked> последний бамп &nbsp; /</label>
+							<label style="cursor: pointer;"><input name="sortmode" type="radio" value="1"> дата создания ]</label>
+							<br>
+							<label style="cursor: pointer;">[<input name="sortdirection" type="radio" value="0"> по возрастанию &nbsp; /</label>
+							<label style="cursor: pointer;"><input name="sortdirection" type="radio" value="1" checked> по убыванию ]</label>
+						</td>
 					</tr>
 				</tbody>
 			</table>
 	</div>
 	`
 );
-$('#filterbox').oninput = filterCatalog;
 
+// Fancy effects
+$(catalogParser.clearBtn).style.color = 'orangered';
+$(catalogParser.clearBtn).style.cursor = 'pointer';
+$(catalogParser.clearBtn).onmouseenter = (event) => event.target.style.fontWeight = 'bold';
+$(catalogParser.clearBtn).onmouseleave = (event) => event.target.style.fontWeight = '';
 
-// display date & time for each thread
-for(var thread of Array.from($$('.catthreadlist a'))){
+// Bind to the input event(s)
+$(catalogParser.clearBtn).onclick = (event) => {
+    var input = event.target.previousSibling.previousSibling;
+
+    input.value = '';
+    input.dispatchEvent(new unsafeWindow.Event('input'));
+};
+
+$(catalogParser.searchBox).oninput = filterCatalog;
+$(catalogParser.sortMode + ',' + catalogParser.sortDirection).forEach(element => element.onchange = sortCatalog);
+
+// Display date & time for each thread
+$(catalogParser.threads).forEach(thread => {
 	var date = thread.title;
 
-	thread.querySelector('br[clear]').insertAdjacentHTML(
+	$('br[clear]', thread).insertAdjacentHTML(
 		'afterend',
-		'<span class="postertrip">[' + date.match(/(\d{2})\s(\W{3})(?:\W+)?\s(\d{4})/).slice(1,4).join('/') + ' ' + date.match(/..:.{5}/) + ']</span><br>'
+		`<span class="postertrip">[${ date.match(catalogParser.date).slice(1, 4).join('/') } ${ date.match(catalogParser.time) }]</span><br>`
 	);
-}
+});
 
-// count threads
-(function(){
-    var event =  new unsafeWindow.Event('input');
+// Count threads
+[' ', ''].forEach(val => {
+	$(catalogParser.searchBox).value = val;
+	$(catalogParser.searchBox).dispatchEvent(new unsafeWindow.Event('input'));
+});
 
-    ['test', ''].forEach(val => {
-        $('#filterbox').value = val;
-        $('#filterbox').dispatchEvent(event);
-    });
-})();
+// Remember bump order
+$(catalogParser.threads).forEach((thread, i) => {
+    thread.dataset.bumpOrder = ++i;
+});
+
+// Focus search bar
+$(catalogParser.searchBox).focus();
+
 
 

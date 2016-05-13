@@ -1,0 +1,17 @@
+{
+  "name": "iichan-catalogue-search",
+  "version": "1.5.0",
+  "devDependencies": {
+    "babel": "^6.0.0",
+    "babel-cli": "^6.0.0",
+    "babel-preset-es2015": "*",
+    "core-js": "=2.4.0",
+    "grunt": "~0.4",
+    "requirejs": "^2.2.0"
+  },
+  "babel": {
+    "presets": [
+      "babel-preset-es2015"
+    ]
+  }
+}
