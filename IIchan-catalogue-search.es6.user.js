@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         IIchan catalogue search
 // @namespace    https://github.com/aslian/IIchan-catalogue-search
+// @icon         https://raw.githubusercontent.com/hades/wakaba/master/wakaba.ico
 // @version      2.0
 // @description  Trying to take over the world!
 // @author       Cirno
