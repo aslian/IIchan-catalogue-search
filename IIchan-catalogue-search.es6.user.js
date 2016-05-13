@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IIchan catalogue search
 // @namespace    localhost
-// @version      1.0
+// @version      1.5
 // @description  trying to take over the world!
 // @author       Cirno
 // @match        http://iichan.hk/*/catalogue.html
@@ -56,8 +56,19 @@ function filterCatalog(event){
 
 // display search bar
 $('.theader').insertAdjacentHTML(
-	'beforebegin',
-	'<input type="text" title="Search" id="filterbox" placeholder="Start typing to search..." style="margin-left: 1em; width: 20%;">'
+	'afterend',
+	`
+	<div class="postarea">
+			<table style="margin: inherit;">
+				<tbody>
+					<tr>
+						<td class="postblock">&nbsp;Поиск&nbsp;</td>
+						<td><input size="28" type="text" autocomplete="off" title="Поиск" id="filterbox" placeholder="Начните ввод для поиска..."></td>
+					</tr>
+				</tbody>
+			</table>
+	</div>
+	`
 );
 $('#filterbox').oninput = filterCatalog;
 
@@ -68,6 +79,18 @@ for(var thread of Array.from($$('.catthreadlist a'))){
 
 	thread.querySelector('br[clear]').insertAdjacentHTML(
 		'afterend',
-		'<span class="postertrip" style="background:cornsilk">[' + date.match(/(\d{2})\s(\W{3})(?:\W+)?\s(\d{4})/).slice(1,4).join('/') + ' ' + date.match(/..:.{5}/) + ']</span><br>'
+		'<span class="postertrip">[' + date.match(/(\d{2})\s(\W{3})(?:\W+)?\s(\d{4})/).slice(1,4).join('/') + ' ' + date.match(/..:.{5}/) + ']</span><br>'
 	);
 }
+
+// count threads
+(function(){
+    var event =  new unsafeWindow.Event('input');
+
+    ['test', ''].forEach(val => {
+        $('#filterbox').value = val;
+        $('#filterbox').dispatchEvent(event);
+    });
+})();
+
+
