@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         IIchan catalogue search
-// @namespace    localhost
+// @namespace    https://github.com/aslian/IIchan-catalogue-search
 // @version      2.0
 // @description  Trying to take over the world!
 // @author       Cirno
