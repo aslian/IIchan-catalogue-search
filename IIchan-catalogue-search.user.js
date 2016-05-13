@@ -1460,6 +1460,15 @@ var $ = function (selector) {
 	}
 }.bind(document);
 
+if (typeof GM_info === 'undefined') {
+	unsafeWindow = window;
+	GM_info = {
+		script: {
+			namespace: 'https://github.com/aslian/IIchan-catalogue-search'
+		}
+	};
+}
+
 var catalogParser = {
 	container: '.catthreadlist',
 	threads: '.catthreadlist a',
@@ -1573,7 +1582,7 @@ function sortCatalog() {
 // onDOMContentLoaded
 
 // Display UI
-$(catalogParser.heading).insertAdjacentHTML('afterend', '\n\t<div class="postarea">\n\t\t\t<table style="margin: inherit;">\n\t\t\t\t<tbody>\n\t\t\t\t\t<tr>\n\t\t\t\t\t\t<td class="postblock">&nbsp;Поиск&nbsp;<a target="_blank" href="' + GM_info.script.namespace + '#Использование" style="font-weight: normal;">[?]</a></td>\n\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t<input size="28" type="text" autocomplete="off" title="Поиск" id="searchbox" placeholder="Начните ввод для поиска...">\n\t\t\t\t\t\t\t<span id="clearbtn">ｘ</span>\n\t\t\t\t\t\t</td>\n\t\t\t\t\t</tr>\n\t\t\t\t\t<tr>\n\t\t\t\t\t\t<td class="postblock">Сортировка&nbsp;&nbsp;</td>\n\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t<label style="cursor: pointer;">[<input name="sortmode" type="radio" value="0" checked> последний бамп &nbsp; /</label>\n\t\t\t\t\t\t\t<label style="cursor: pointer;"><input name="sortmode" type="radio" value="1"> дата создания ]</label>\n\t\t\t\t\t\t\t<br>\n\t\t\t\t\t\t\t<label style="cursor: pointer;">[<input name="sortdirection" type="radio" value="0"> по возрастанию &nbsp; /</label>\n\t\t\t\t\t\t\t<label style="cursor: pointer;"><input name="sortdirection" type="radio" value="1" checked> по убыванию ]</label>\n\t\t\t\t\t\t</td>\n\t\t\t\t\t</tr>\n\t\t\t\t</tbody>\n\t\t\t</table>\n\t</div>\n\t');
+$(catalogParser.heading).insertAdjacentHTML('afterend', '\n\t<div class="postarea">\n\t\t\t<table style="margin: inherit;">\n\t\t\t\t<tbody>\n\t\t\t\t\t<tr>\n\t\t\t\t\t\t<td class="postblock">&nbsp;Поиск&nbsp;<a target="_blank" href="' + GM_info.script.namespace + '#Использование" style="font-weight: normal;">[?]</a></td>\n\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t<input size="28" type="text" autocomplete="off" title="Поиск" id="searchbox" placeholder="Начните ввод для поиска...">\n\t\t\t\t\t\t\t<span id="clearbtn">ｘ</span>\n\t\t\t\t\t\t</td>\n\t\t\t\t\t</tr>\n\t\t\t\t\t<tr>\n\t\t\t\t\t\t<td class="postblock">Сортировка&nbsp;&nbsp;</td>\n\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t<label style="cursor: pointer;">[<input name="sortmode" type="radio" value="0" checked> последний бамп &nbsp; /</label>\n\t\t\t\t\t\t\t<label style="cursor: pointer;"><input name="sortmode" type="radio" value="1"> дата создания ]</label>\n\t\t\t\t\t\t\t<br>\n\t\t\t\t\t\t\t<label style="cursor: pointer;">[<input name="sortdirection" type="radio" value="1" checked> по убыванию &nbsp; /</label>\n\t\t\t\t\t\t\t<label style="cursor: pointer;"><input name="sortdirection" type="radio" value="0"> по возрастанию ]</label>\n\t\t\t\t\t\t</td>\n\t\t\t\t\t</tr>\n\t\t\t\t</tbody>\n\t\t\t</table>\n\t</div>\n\t');
 
 // Fancy effects
 $(catalogParser.clearBtn).style.color = 'orangered';

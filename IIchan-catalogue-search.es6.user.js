@@ -141,8 +141,8 @@ $(catalogParser.heading).insertAdjacentHTML(
 							<label style="cursor: pointer;">[<input name="sortmode" type="radio" value="0" checked> последний бамп &nbsp; /</label>
 							<label style="cursor: pointer;"><input name="sortmode" type="radio" value="1"> дата создания ]</label>
 							<br>
-							<label style="cursor: pointer;">[<input name="sortdirection" type="radio" value="0"> по возрастанию &nbsp; /</label>
-							<label style="cursor: pointer;"><input name="sortdirection" type="radio" value="1" checked> по убыванию ]</label>
+							<label style="cursor: pointer;">[<input name="sortdirection" type="radio" value="1" checked> по убыванию &nbsp; /</label>
+							<label style="cursor: pointer;"><input name="sortdirection" type="radio" value="0"> по возрастанию ]</label>
 						</td>
 					</tr>
 				</tbody>
