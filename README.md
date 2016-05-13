@@ -3,6 +3,10 @@
 Userscript для поиска в каталоге имиджборды iichan.hk
 
 ### Установка
+> **[\[INSTALL\]](https://github.com/aslian/IIchan-catalogue-search/raw/master/IIchan-catalogue-search.user.js)**
+
+> **[\[INSTALL\] (ES6)](https://github.com/aslian/IIchan-catalogue-search/raw/master/IIchan-catalogue-search.es6.user.js)**
+
 <pre>
 1. Разумеется, сперва понадобится движок юзескриптов. 
 Tampermonkey для Chrom[ium|e].
@@ -10,7 +14,7 @@ Greasemonkey для Firefox.
 Violent monkey для Opera.
 
 2. Далее выбирайте версию скрипта для вашего браузера. 
-.es6.user.js для новых, в зависимости от того, <a href="http://kangax.github.io/compat-table/es6/">поддерживает</a> <a href="http://caniuse.com/#search=ES6">ли</a> его ваш браузер.
+.es6.user.js для новых, в зависимости от того, <a href="http://kangax.github.io/compat-table/es6/">поддерживает</a> <a href="http://caniuse.com/#search=ES6">ли</a> его (ES6) ваш браузер.
 </pre>
 
 ### Использование
