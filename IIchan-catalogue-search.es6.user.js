@@ -120,7 +120,7 @@ $(catalogParser.heading).insertAdjacentHTML(
 			<table style="margin: inherit;">
 				<tbody>
 					<tr>
-						<td class="postblock">&nbsp;Поиск&nbsp;</td>
+						<td class="postblock">&nbsp;Поиск&nbsp;<a target="_blank" href="${ GM_info.script.namespace }#Использование" style="font-weight: normal;">[?]</a></td>
 						<td>
 							<input size="28" type="text" autocomplete="off" title="Поиск" id="searchbox" placeholder="Начните ввод для поиска...">
 							<span id="clearbtn">ｘ</span>
