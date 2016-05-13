@@ -3,9 +3,9 @@
 Userscript для поиска в каталоге имиджборды iichan.hk
 
 ### Установка
-> **[\[INSTALL\]](https://github.com/aslian/IIchan-catalogue-search/raw/master/IIchan-catalogue-search.user.js)**
+> **[\[ INSTALL \]](https://github.com/aslian/IIchan-catalogue-search/raw/master/IIchan-catalogue-search.user.js)**
 
-> **[\[INSTALL\] (ES6)](https://github.com/aslian/IIchan-catalogue-search/raw/master/IIchan-catalogue-search.es6.user.js)**
+> **[\[ INSTALL \] (ES6)](https://github.com/aslian/IIchan-catalogue-search/raw/master/IIchan-catalogue-search.es6.user.js)**
 
 <pre>
 1. Разумеется, сперва понадобится движок юзескриптов. 
@@ -25,16 +25,16 @@ Violent monkey для Opera.
 - Номеру треда
 - Теме треда
 - Кусочку сообщения ОП-поста (который попадает в каталог)
-<цукас> найдёт всех Цукас
+<цукас> найдёт всех Цукас (Цукасы, Цукасе, Цукасу...)
 
 - Дате (месяцу/дню/году/часу/минуте) создания треда
-<января 2011> найдёт все треды, созданные в Январе 2011
-<сентяб> найдёт все треды за Сентябрь
-<2008> найдёт все треды за 2088 год
-<18:00> найдёт все треды запощенные в шесть часов вечера
+<января 2011> найдёт все треды, созданные в январе 2011
+<сентяб> найдёт все треды за сентябрь
+<2008> найдёт все треды за 2008 год
+<18:00> найдёт все треды, запощенные в шесть часов вечера
 
 - Регулярному выражению
-<$^> найдёт все треды без текста в ОП-посте
+<^$> найдёт все треды без текста в ОП-посте
 ```
 
 
