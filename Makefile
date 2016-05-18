@@ -11,6 +11,7 @@ define SED_PATTERN_1
 		n
 		x
 		a
+		r gm-polyfill.js
 		r dom-childnode-remove-polyfill.js
 		a
 		r polyfill.js
