@@ -6,6 +6,7 @@
 // @description  Trying to take over the world!
 // @author       Cirno
 // @match        http://iichan.hk/*/catalogue.html
+// @match        https://iichan.hk/*/catalogue.html
 // @grant        unsafeWindow
 // ==/UserScript==
 
