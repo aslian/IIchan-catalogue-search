@@ -54,6 +54,6 @@ make
 ### См. также
 
 - [IIchan Extensions](https://github.com/WagonOfDoubt/iichan-extensions) от [@WagonOfDoubt](https://github.com/WagonOfDoubt)
-- [IIchan IIchan archive search](https://github.com/WagonOfDoubt/IIchan-archive-search) от [@WagonOfDoubt](https://github.com/WagonOfDoubt)
+- [IIchan archive search](https://github.com/WagonOfDoubt/IIchan-archive-search) от [@WagonOfDoubt](https://github.com/WagonOfDoubt)
 - [Dollchan Extension Tools](https://github.com/SthephanShinkufag/Dollchan-Extension-Tools) от [@SthephanShinkufag](https://github.com/SthephanShinkufag)
 
