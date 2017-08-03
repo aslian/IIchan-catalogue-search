@@ -29,7 +29,7 @@ if (typeof GM_info === 'undefined') {
 		script: {		
 			namespace: 'https://github.com/aslian/IIchan-catalogue-search'		
 		}		
-	}		
+	};		
 }		
 
 var catalogParser  = {
@@ -193,5 +193,73 @@ $(catalogParser.threads).forEach((thread, i) => {
 // Focus search bar
 $(catalogParser.searchBox).focus();
 
+// Thread hider
+(() => {
+  document.head.insertAdjacentHTML('beforeend',
+    `<style type="text/css">
+      .catthreadlist a {
+        position: relative;
+      }
+      .iichan-hide-thread-btn {
+        cursor: pointer;
+        text-decoration: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: none;
+        width: 25px;
+        height: 25px;
+      }
+      .iichan-hide-thread-btn > span {
+        display: inline-block;
+      }
+      .catthread:hover .iichan-hide-thread-btn {
+        display: block;
+      }
+      .catthreadlist a {
+        transition: all .3s ease-in-out;
+      }
+      .iichan-thread-hidden:not(:hover) {
+        opacity: .2;
+        filter: blur(2px);
+      }
+      .iichan-thread-hidden .iichan-hide-thread-btn > span {
+        transform: rotate(45deg);
+      }
+    </style>`);
+  const board = window.location.href.match(/(?:\w+\.\w+\/)(.*)(?=\/)/).pop();
+  const hiddenThreads = JSON.parse(window.localStorage.getItem('iichan_hidden_threads') || '{}');
+  if (!hiddenThreads[board]) {
+    hiddenThreads[board] = [];
+  }
+  $(catalogParser.threads).forEach((thread) => {
+    const threadNumber = 'thread-' + thread.title.match(catalogParser.threadNumber).pop();
+    if (hiddenThreads[board] && hiddenThreads[board].includes(threadNumber)) {
+      thread.classList.add('iichan-thread-hidden');
+    }
+    const btn = document.createElement('div');
+    btn.title = 'Скрыть тред';
+    btn.className = 'iichan-hide-thread-btn postblock';
+    btn.innerHTML = '[<span>✕</span>]';
 
-
+    $('.catthread', thread).appendChild(btn);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      thread.classList.toggle('iichan-thread-hidden');
+      if (thread.classList.contains('iichan-thread-hidden')) {
+        // hide thread
+        if (!hiddenThreads[board].includes(threadNumber)) {
+          hiddenThreads[board].push(threadNumber);
+          window.localStorage.setItem('iichan_hidden_threads', JSON.stringify(hiddenThreads));
+        }
+      } else {
+        // unhide thread
+        const index = hiddenThreads[board].indexOf(threadNumber);
+        if (index !== -1) {
+          hiddenThreads[board].splice(index, 1);
+          window.localStorage.setItem('iichan_hidden_threads', JSON.stringify(hiddenThreads));
+        }
+      }
+    });
+  });
+})();
