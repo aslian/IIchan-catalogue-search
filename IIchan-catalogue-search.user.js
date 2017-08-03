@@ -42,7 +42,7 @@ if (!('remove' in unsafeWindow.Text.prototype)) {
  * core-js 2.4.0
  * https://github.com/zloirock/core-js
  * License: http://rock.mit-license.org
- * © 2016 Denis Pushkarev
+ * © 2017 Denis Pushkarev
  */
 !function(__e, __g, undefined){
 'use strict';
@@ -1457,183 +1457,224 @@ else __g.core = __e;
 *                  END POLYFILL                     *
 *****************************************************/
 var $ = function (selector) {
-	var startNode = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+  var startNode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-	var elements = (startNode || document).querySelectorAll(selector);
+  var elements = (startNode || document).querySelectorAll(selector);
 
-	if (elements.length === 0) {
-		return [];
-	} else if (elements.length === 1) {
-		return elements[0];
-	} else {
-		return Array.from(elements);
-	}
+  if (elements.length === 0) {
+    return [];
+  } else if (elements.length === 1) {
+    return elements[0];
+  } else {
+    return Array.from(elements);
+  }
 }.bind(document);
 
 if (typeof GM_info === 'undefined') {
-	unsafeWindow = window;
-	GM_info = {
-		script: {
-			namespace: 'https://github.com/aslian/IIchan-catalogue-search'
-		}
-	};
+  unsafeWindow = window;
+  GM_info = {
+    script: {
+      namespace: 'https://github.com/aslian/IIchan-catalogue-search'
+    }
+  };
 }
 
 var catalogParser = {
-	container: '.catthreadlist',
-	threads: '.catthreadlist a',
+  container: '.catthreadlist',
+  threads: '.catthreadlist a',
 
-	heading: '.theader',
-	title: '.filetitle',
-	snippet: '.cattext',
+  heading: '.theader',
+  title: '.filetitle',
+  snippet: '.cattext',
 
-	date: /(\d{2})\s(\W{3})(?:\W+)?\s(\d{4})/,
-	time: /..:.{5}/,
-	threadNumber: /^#(\d+)\s/,
+  date: /(\d{2})\s(\W{3})(?:\W+)?\s(\d{4})/,
+  time: /..:.{5}/,
+  threadNumber: /^#(\d+)\s/,
 
-	searchBox: '#searchbox',
-	clearBtn: '#clearbtn',
-	sortMode: 'input[name=sortmode]',
-	sortDirection: 'input[name=sortdirection]'
+  searchBox: '#searchbox',
+  clearBtn: '#clearbtn',
+  sortMode: 'input[name=sortmode]',
+  sortDirection: 'input[name=sortdirection]'
 };
 
 function filterCatalog(event) {
-	var query = event.target.value;
+  var query = event.target.value;
 
-	var threads = $(catalogParser.threads);
-	var count = threads.length;
+  var threads = $(catalogParser.threads);
+  var count = threads.length;
 
-	var _iteratorNormalCompletion = true;
-	var _didIteratorError = false;
-	var _iteratorError = undefined;
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
 
-	try {
-		for (var _iterator = threads[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-			var thread = _step.value;
+  try {
+    for (var _iterator = threads[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var thread = _step.value;
 
-			// Reset
-			if (thread.style.display !== '') {
-				thread.style.display = '';
-			}
+      // Reset
+      if (thread.style.display !== '') {
+        thread.style.display = '';
+      }
 
-			// If nothing to nipah about, give up
-			if (query === '' || query.match(/^\s+$/)) {
-				continue;
-			}
+      // If nothing to nipah about, give up
+      if (query === '' || query.match(/^\s+$/)) {
+        continue;
+      }
 
-			// But if they doesnt't fit...
-			var re = new RegExp(query, 'i');
-			if (!(thread.title.match(re) || // This actually matches thread creation date, although accessing "title" property
-			$(catalogParser.title, thread).length !== 0 && $(catalogParser.title, thread).textContent.match(re) || $(catalogParser.snippet, thread).length !== 0 && $(catalogParser.snippet, thread).textContent.match(re))) {
-				// ... hide 'em and reveal needed
-				thread.style.display = 'none';
-				count--;
-			}
-		}
-	} catch (err) {
-		_didIteratorError = true;
-		_iteratorError = err;
-	} finally {
-		try {
-			if (!_iteratorNormalCompletion && _iterator.return) {
-				_iterator.return();
-			}
-		} finally {
-			if (_didIteratorError) {
-				throw _iteratorError;
-			}
-		}
-	}
+      // But if they doesnt't fit...
+      var re = new RegExp(query, 'i');
+      if (!(thread.title.match(re) || // This actually matches thread creation date, although accessing "title" property
+      $(catalogParser.title, thread).length !== 0 && $(catalogParser.title, thread).textContent.match(re) || $(catalogParser.snippet, thread).length !== 0 && $(catalogParser.snippet, thread).textContent.match(re))) {
+        // ... hide 'em and reveal needed
+        thread.style.display = 'none';
+        count--;
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
 
-	$(catalogParser.heading).innerHTML = $(catalogParser.heading).innerHTML.match(/\d/) ? $(catalogParser.heading).innerHTML.replace(/\d+/, count) : $(catalogParser.heading).innerHTML + (' <b>(' + count + ')</b>');
+  $(catalogParser.heading).innerHTML = $(catalogParser.heading).innerHTML.match(/\d/) ? $(catalogParser.heading).innerHTML.replace(/\d+/, count) : $(catalogParser.heading).innerHTML + (' <b>(' + count + ')</b>');
 }
 
 /* jshint ignore:start */
 function sortCatalog() {
-	// false: bump order, true: by date
-	// false: asc,        true: desc
-	var mode = Boolean(parseInt($(catalogParser.sortMode + ':checked').value));
-	var desc = Boolean(parseInt($(catalogParser.sortDirection + ':checked').value));
+  // false: bump order, true: by date
+  // false: asc,        true: desc
+  var mode = Boolean(parseInt($(catalogParser.sortMode + ':checked').value));
+  var desc = Boolean(parseInt($(catalogParser.sortDirection + ':checked').value));
 
-	var threads = $(catalogParser.threads);
+  var threads = $(catalogParser.threads);
 
-	// This affects perfomance.
-	// Hidden elements are being sorted faster.
-	$(catalogParser.container).style.display = 'none';
+  // This affects perfomance.
+  // Hidden elements are being sorted faster.
+  $(catalogParser.container).style.display = 'none';
 
-	threads.sort(function (a, b) {
-		var _map = [a, b].map(function (thread) {
-			return mode ? parseInt(thread.title.match(catalogParser.threadNumber).pop()) : parseInt(thread.dataset.bumpOrder);
-		});
+  threads.sort(function (a, b) {
+    var _map = [a, b].map(function (thread) {
+      return mode ? parseInt(thread.title.match(catalogParser.threadNumber).pop()) : parseInt(thread.dataset.bumpOrder);
+    });
 
-		var _map2 = _slicedToArray(_map, 2);
+    var _map2 = _slicedToArray(_map, 2);
 
-		a = _map2[0];
-		b = _map2[1];
+    a = _map2[0];
+    b = _map2[1];
 
 
-		if (mode) {
-			if (desc) return -(a - b);
-			return a - b;
-		} else {
-			if (desc) return a - b;
-			return -(a - b);
-		}
-	}).forEach(function (thread) {
-		thread.parentNode.appendChild(thread);
-		if (thread.firstChild.nodeType == Node.TEXT_NODE) thread.firstChild.remove(); // Fix textNode artifacts
-	});
+    if (mode) {
+      if (desc) return -(a - b);
+      return a - b;
+    } else {
+      if (desc) return a - b;
+      return -(a - b);
+    }
+  }).forEach(function (thread) {
+    thread.parentNode.appendChild(thread);
+    if (thread.firstChild.nodeType == Node.TEXT_NODE) thread.firstChild.remove // Fix textNode artifacts
+    ();
+  }
 
-	// Show them.
-	$(catalogParser.container).style.display = '';
+  // Show them.
+  );$(catalogParser.container).style.display = '';
 }
 /* jshint ignore:end */
 
 // onDOMContentLoaded
 
 // Display UI
-$(catalogParser.heading).insertAdjacentHTML('afterend', '\n\t<div class="postarea">\n\t\t\t<table style="margin: inherit;">\n\t\t\t\t<tbody>\n\t\t\t\t\t<tr>\n\t\t\t\t\t\t<td class="postblock">&nbsp;Поиск&nbsp;<a target="_blank" href="' + GM_info.script.namespace + '#Использование" style="font-weight: normal;">[?]</a></td>\n\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t<input size="28" type="text" autocomplete="off" title="Поиск" id="searchbox" placeholder="Начните ввод для поиска...">\n\t\t\t\t\t\t\t<span id="clearbtn">ｘ</span>\n\t\t\t\t\t\t</td>\n\t\t\t\t\t</tr>\n\t\t\t\t\t<tr>\n\t\t\t\t\t\t<td class="postblock">Сортировка&nbsp;&nbsp;</td>\n\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t<label style="cursor: pointer;">[<input name="sortmode" type="radio" value="0" checked> последний бамп &nbsp; /</label>\n\t\t\t\t\t\t\t<label style="cursor: pointer;"><input name="sortmode" type="radio" value="1"> дата создания ]</label>\n\t\t\t\t\t\t\t<br>\n\t\t\t\t\t\t\t<label style="cursor: pointer;">[<input name="sortdirection" type="radio" value="1" checked> по убыванию &nbsp; /</label>\n\t\t\t\t\t\t\t<label style="cursor: pointer;"><input name="sortdirection" type="radio" value="0"> по возрастанию ]</label>\n\t\t\t\t\t\t</td>\n\t\t\t\t\t</tr>\n\t\t\t\t</tbody>\n\t\t\t</table>\n\t</div>\n\t');
+$(catalogParser.heading).insertAdjacentHTML('afterend', '\n\t<div class="postarea">\n\t\t\t<table style="margin: inherit;">\n\t\t\t\t<tbody>\n\t\t\t\t\t<tr>\n\t\t\t\t\t\t<td class="postblock">&nbsp;\u041F\u043E\u0438\u0441\u043A&nbsp;<a target="_blank" href="' + GM_info.script.namespace + '#\u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u0438\u0435" style="font-weight: normal;">[?]</a></td>\n\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t<input size="28" type="text" autocomplete="off" title="\u041F\u043E\u0438\u0441\u043A" id="searchbox" placeholder="\u041D\u0430\u0447\u043D\u0438\u0442\u0435 \u0432\u0432\u043E\u0434 \u0434\u043B\u044F \u043F\u043E\u0438\u0441\u043A\u0430...">\n\t\t\t\t\t\t\t<span id="clearbtn">\uFF58</span>\n\t\t\t\t\t\t</td>\n\t\t\t\t\t</tr>\n\t\t\t\t\t<tr>\n\t\t\t\t\t\t<td class="postblock">\u0421\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u043A\u0430&nbsp;&nbsp;</td>\n\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t<label style="cursor: pointer;">[<input name="sortmode" type="radio" value="0" checked> \u043F\u043E\u0441\u043B\u0435\u0434\u043D\u0438\u0439 \u0431\u0430\u043C\u043F &nbsp; /</label>\n\t\t\t\t\t\t\t<label style="cursor: pointer;"><input name="sortmode" type="radio" value="1"> \u0434\u0430\u0442\u0430 \u0441\u043E\u0437\u0434\u0430\u043D\u0438\u044F ]</label>\n\t\t\t\t\t\t\t<br>\n\t\t\t\t\t\t\t<label style="cursor: pointer;">[<input name="sortdirection" type="radio" value="1" checked> \u043F\u043E \u0443\u0431\u044B\u0432\u0430\u043D\u0438\u044E &nbsp; /</label>\n\t\t\t\t\t\t\t<label style="cursor: pointer;"><input name="sortdirection" type="radio" value="0"> \u043F\u043E \u0432\u043E\u0437\u0440\u0430\u0441\u0442\u0430\u043D\u0438\u044E ]</label>\n\t\t\t\t\t\t</td>\n\t\t\t\t\t</tr>\n\t\t\t\t</tbody>\n\t\t\t</table>\n\t</div>\n\t');
 
 // Fancy effects
 $(catalogParser.clearBtn).style.color = 'orangered';
 $(catalogParser.clearBtn).style.cursor = 'pointer';
 $(catalogParser.clearBtn).onmouseenter = function (event) {
-	return event.target.style.fontWeight = 'bold';
+  return event.target.style.fontWeight = 'bold';
 };
 $(catalogParser.clearBtn).onmouseleave = function (event) {
-	return event.target.style.fontWeight = '';
+  return event.target.style.fontWeight = '';
 };
 
 // Bind to the input event(s)
 $(catalogParser.clearBtn).onclick = function (event) {
-	var input = event.target.previousSibling.previousSibling;
+  var input = event.target.previousSibling.previousSibling;
 
-	input.value = '';
-	input.dispatchEvent(new unsafeWindow.Event('input'));
+  input.value = '';
+  input.dispatchEvent(new unsafeWindow.Event('input'));
 };
 
 $(catalogParser.searchBox).oninput = filterCatalog;
 $(catalogParser.sortMode + ',' + catalogParser.sortDirection).forEach(function (element) {
-	return element.onchange = sortCatalog;
+  return element.onchange = sortCatalog;
 });
 
 // Display date & time for each thread
 $(catalogParser.threads).forEach(function (thread) {
-	var date = thread.title;
+  var date = thread.title;
 
-	$('br[clear]', thread).insertAdjacentHTML('afterend', '<span class="postertrip">[' + date.match(catalogParser.date).slice(1, 4).join('/') + ' ' + date.match(catalogParser.time) + ']</span><br>');
+  $('br[clear]', thread).insertAdjacentHTML('afterend', '<span class="postertrip">[' + date.match(catalogParser.date).slice(1, 4).join('/') + ' ' + date.match(catalogParser.time) + ']</span><br>');
 });
 
 // Count threads
 [' ', ''].forEach(function (val) {
-	$(catalogParser.searchBox).value = val;
-	$(catalogParser.searchBox).dispatchEvent(new unsafeWindow.Event('input'));
+  $(catalogParser.searchBox).value = val;
+  $(catalogParser.searchBox).dispatchEvent(new unsafeWindow.Event('input'));
 });
 
 // Remember bump order
 $(catalogParser.threads).forEach(function (thread, i) {
-	thread.dataset.bumpOrder = ++i;
+  thread.dataset.bumpOrder = ++i;
 });
 
 // Focus search bar
 $(catalogParser.searchBox).focus();
+
+// Thread hider
+(function () {
+  document.head.insertAdjacentHTML('beforeend', '<style type="text/css">\n      .catthreadlist a {\n        position: relative;\n      }\n      .iichan-hide-thread-btn {\n        cursor: pointer;\n        text-decoration: none;\n        position: absolute;\n        top: 0;\n        right: 0;\n        display: none;\n        width: 25px;\n        height: 25px;\n      }\n      .iichan-hide-thread-btn > span {\n        display: inline-block;\n      }\n      .catthread:hover .iichan-hide-thread-btn {\n        display: block;\n      }\n      .catthreadlist a {\n        transition: all .3s ease-in-out;\n      }\n      .iichan-thread-hidden:not(:hover) {\n        opacity: .2;\n        filter: blur(2px);\n      }\n      .iichan-thread-hidden .iichan-hide-thread-btn > span {\n        transform: rotate(45deg);\n      }\n    </style>');
+  var board = window.location.href.match(/(?:\w+\.\w+\/)(.*)(?=\/)/).pop();
+  var hiddenThreads = JSON.parse(window.localStorage.getItem('iichan_hidden_threads') || '{}');
+  if (!hiddenThreads[board]) {
+    hiddenThreads[board] = [];
+  }
+  $(catalogParser.threads).forEach(function (thread) {
+    var threadNumber = 'thread-' + thread.title.match(catalogParser.threadNumber).pop();
+    if (hiddenThreads[board] && hiddenThreads[board].includes(threadNumber)) {
+      thread.classList.add('iichan-thread-hidden');
+    }
+    var btn = document.createElement('div');
+    btn.title = 'Скрыть тред';
+    btn.className = 'iichan-hide-thread-btn postblock';
+    btn.innerHTML = '[<span>✕</span>]';
+
+    $('.catthread', thread).appendChild(btn);
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      thread.classList.toggle('iichan-thread-hidden');
+      if (thread.classList.contains('iichan-thread-hidden')) {
+        // hide thread
+        if (!hiddenThreads[board].includes(threadNumber)) {
+          hiddenThreads[board].push(threadNumber);
+          window.localStorage.setItem('iichan_hidden_threads', JSON.stringify(hiddenThreads));
+        }
+      } else {
+        // unhide thread
+        var index = hiddenThreads[board].indexOf(threadNumber);
+        if (index !== -1) {
+          hiddenThreads[board].splice(index, 1);
+          window.localStorage.setItem('iichan_hidden_threads', JSON.stringify(hiddenThreads));
+        }
+      }
+    });
+  });
+})();
